@@ -30,4 +30,13 @@ const BookNameText = styled(Text)`
   color: #000;
 `;
 
-export { DefaultText, DefaultTitle, BookNameText };
+const TagText = styled(Text)`
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: #fff;
+`;
+
+export { DefaultText, DefaultTitle, BookNameText, TagText };

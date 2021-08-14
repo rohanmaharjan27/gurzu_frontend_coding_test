@@ -12,6 +12,15 @@ $btnColorTwo: #096dd9;
   &-bodyCartBtnCol {
     padding-top: 32px;
   }
+  &-stock {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+  }
+  &-tag {
+    padding: 2px 4px;
+    margin-top: 8px;
+  }
   &-btnCart {
     padding: 4px;
     border-radius: 4px;
