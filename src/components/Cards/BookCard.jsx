@@ -6,7 +6,9 @@ import Notification from "../Notification/Notification";
 import { BookNameText, DefaultText, TagText } from "../Typography/Typography";
 import "./styles.scss";
 
-export default function BookCard({ item, setCurrentCart }) {
+export default function BookCard(props) {
+  const { item, index, books, setBooks, currentCart, setCurrentCart } = props;
+
   const {
     id,
     "name ": bookName,
@@ -16,7 +18,7 @@ export default function BookCard({ item, setCurrentCart }) {
     author,
     genre,
     published_date,
-  } = item;
+  } = item !== undefined && item;
 
   // handling published date
   const fomattedData = moment(published_date).format("DD-MM-YYYY");
@@ -33,66 +35,87 @@ export default function BookCard({ item, setCurrentCart }) {
   const convertedPrice = (formattedPrice[1] * USD_TO_NPR_RATE).toFixed(2);
 
   const handleAddToCart = () => {
-    let currentCart = [];
-    let findIfBookExists;
+    let cartArr = [];
+    // let cartFromStorage = JSON.parse(localStorage.getItem("book_market_cart"));
 
-    let cartFromStorage = JSON.parse(localStorage.getItem("book_market_cart"));
+    // if (cartFromStorage) {
+    //   currentCart = cartFromStorage;
+    // } else {
+    //   cartFromStorage = [];
+    // }
 
-    if (cartFromStorage) {
-      currentCart = cartFromStorage;
-    } else {
-      cartFromStorage = [];
+    let foundBookObj;
+    if (currentCart.length > 0) {
+      foundBookObj = currentCart.find((element) => element.id === item.id);
     }
 
-    let bookObj = {
+    let bookObjIfNew = {
       id,
       name: bookName,
       image,
+      quantity: 1,
       price: convertedPrice,
+      net_total: convertedPrice,
+      bookIndex: index,
     };
 
-    if (currentCart.length > 0) {
-      findIfBookExists = currentCart.find((element) => element.id === item.id);
-    }
+    // let bookObjIfExists;
+    // if (currentCart.length > 0 && foundBookObj) {
+    //   bookObjIfExists = {
+    //     id: foundBookObj.id,
+    //     name: foundBookObj.name,
+    //     image: foundBookObj.image,
+    //     quantity: foundBookObj.quantity,
+    //     price: foundBookObj.price,
+    //     net_total: foundBookObj.quantity * foundBookObj.price,
+    //   };
+    // }
 
     if (currentCart.length === 5) {
       Notification("warn", "Maximum cart quantity reached!");
     } else {
-      if (findIfBookExists) {
-        Notification("error", "Book already exists in cart");
+      if (foundBookObj && foundBookObj.quantity > 0 && stock > 0) {
+        // foundBookObj.quantity += 1;
+        // foundBookObj.net_total = foundBookObj.quantity * foundBookObj.price;
+
+        let newBooks = [...books];
+        newBooks[index]["stock"]--;
+        setBooks(newBooks);
+
+        let newCart = [...currentCart];
+        newCart[index]["quantity"] += 1;
+        newCart[index]["net_total"] =
+          newCart[index]["quantity"] * parseFloat(newCart[index]["price"]);
+        cartArr.push(foundBookObj);
+
+        setCurrentCart(newCart);
+        Notification("success", "Book quantity has been updated!");
       } else {
-        currentCart.push(bookObj);
-        Notification("success", "Book added to cart");
+        let newBooks = [...books];
+        newBooks[index]["stock"]--;
+        setBooks(newBooks);
+        cartArr.push(bookObjIfNew);
+        setCurrentCart([...currentCart, ...cartArr]);
+        Notification("success", "Book added to cart!");
       }
     }
 
-    localStorage.setItem("book_market_cart", JSON.stringify(currentCart));
-    setCurrentCart(currentCart);
+    // localStorage.setItem("book_market_cart", JSON.stringify(currentCart));
+    // setCurrentCart(currentCart);
   };
 
   return (
     <Card
       hoverable
       cover={
-        <Row style={{ width: "100%" }}>
-          <Image
-            src={image}
-            width="100%"
-            height="250px"
-            alt="book-image"
-            preview={false}
-            className="bookCard-image"
-          />
-          {stock <= 5 ? (
-            <Tag color="#ff7a45" className="bookCard-stock">
-              <TagText>{stock} pieces left</TagText>
-            </Tag>
-          ) : (
-            <Tag color="#52c41a" className="bookCard-stock">
-              <TagText>{stock} pieces left</TagText>
-            </Tag>
-          )}
-        </Row>
+        <Image
+          src={image}
+          width="100%"
+          height="250px"
+          alt="book-image"
+          preview={false}
+          className="bookCard-image"
+        />
       }
       style={{
         height: "525px",
@@ -102,7 +125,7 @@ export default function BookCard({ item, setCurrentCart }) {
       }}
     >
       <Row style={{ width: "100%" }} align="bottom">
-        <Col xs={24} style={{ height: "160px" }}>
+        <Col xs={24} style={{ height: "175px" }}>
           <Row style={{ width: "100%" }}>
             <Col xs={24}>
               <Meta title={<BookNameText>{bookName}</BookNameText>} />
@@ -124,6 +147,17 @@ export default function BookCard({ item, setCurrentCart }) {
                     <TagText>{item}</TagText>
                   </Tag>
                 ))}
+            </Col>
+            <Col xs={24} className="bookCard-bodyColPadding">
+              {stock <= 5 ? (
+                <Tag color="#ff7a45">
+                  <TagText>{stock} pieces left</TagText>
+                </Tag>
+              ) : (
+                <Tag color="#52c41a">
+                  <TagText>{stock} pieces left</TagText>
+                </Tag>
+              )}
             </Col>
             <Col xs={24} className="bookCard-bodyColPadding">
               <DefaultText style={{ fontWeight: 500 }}>

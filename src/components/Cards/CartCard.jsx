@@ -1,16 +1,73 @@
-import { CloseOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  MinusCircleOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 import { Card, Col, Image, Row } from "antd";
 import Meta from "antd/lib/card/Meta";
 import React from "react";
+import Notification from "../Notification/Notification";
 import { BookNameText, DefaultText } from "../Typography/Typography";
 import "./styles.scss";
 
-export default function CartCard({ item, index, handleRemove }) {
-  const { name, image, price } = item;
+export default function CartCard(props) {
+  const {
+    item,
+    books,
+    setBooks,
+    currentCart,
+    setCurrentCart,
+    index,
+    handleRemove,
+  } = props;
 
-  const cart = JSON.parse(localStorage.getItem("book_market_cart"));
+  const { name, image, quantity, price, net_total, bookIndex } =
+    item !== undefined && item;
 
-  console.log("cart", cart);
+  const handleQuantitySubtract = () => {
+    const cartProducts = [...currentCart];
+
+    if (cartProducts[index]["quantity"] <= 1) {
+      Notification("warn", "Minimum quantity reached");
+    } else {
+      // increasing stock of particular book when book quantity is decreased from cart
+      let newBooks = [...books];
+      newBooks[bookIndex]["stock"]++;
+      setBooks(newBooks);
+
+      // updating book quantity and net total when book quantity is decreased from cart
+      cartProducts[index]["quantity"]--;
+      cartProducts[index]["net_total"] =
+        cartProducts[index]["quantity"] * price;
+
+      setCurrentCart(cartProducts);
+
+      // localStorage.setItem("book_market_cart", JSON.stringify(currentCart));
+    }
+  };
+
+  const handleQuantityAdd = () => {
+    const cartProducts = [...currentCart];
+
+    // decreasing stock of particular book when book quantity is increased from cart
+    let newBooks = [...books];
+    let currentStock = newBooks[bookIndex]["stock"];
+
+    if (currentStock > 0) {
+      newBooks[bookIndex]["stock"]--;
+      setBooks(newBooks);
+
+      // updating book quantity and net total when book quantity is increased from cart
+      cartProducts[index]["quantity"]++;
+      cartProducts[index]["net_total"] =
+        cartProducts[index]["quantity"] * price;
+      setCurrentCart(cartProducts);
+    } else {
+      Notification("error", "Out of stock!");
+    }
+
+    // localStorage.setItem("book_market_cart", JSON.stringify(currentCart));
+  };
 
   return (
     <Card
@@ -21,7 +78,7 @@ export default function CartCard({ item, index, handleRemove }) {
       }}
     >
       <Row style={{ width: "100%" }}>
-        <Col xs={6}>
+        <Col xs={4}>
           <Image
             src={image}
             width="100%"
@@ -30,13 +87,35 @@ export default function CartCard({ item, index, handleRemove }) {
             className="bookCard-image"
           />
         </Col>
-        <Col xs={16}>
+        <Col xs={8}>
           <Row style={{ width: "100%" }}>
             <Col xs={24}>
               <Meta title={<BookNameText>{name}</BookNameText>} />
             </Col>
             <Col xs={24} className="bookCard-bodyColPadding">
               <DefaultText style={{ fontWeight: 500 }}>Rs. {price}</DefaultText>
+            </Col>
+          </Row>
+        </Col>
+        <Col xs={10}>
+          <Row style={{ width: "100%" }}>
+            <Col xs={24} align="middle">
+              <MinusCircleOutlined
+                style={{ fontSize: "14px" }}
+                onClick={() => handleQuantitySubtract()}
+              />
+              <DefaultText style={{ margin: "0px 10px" }}>
+                {quantity}
+              </DefaultText>
+              <PlusCircleOutlined
+                style={{ fontSize: "14px" }}
+                onClick={() => handleQuantityAdd()}
+              />
+            </Col>
+            <Col xs={24} className="bookCard-bodyColPadding" align="middle">
+              <DefaultText style={{ fontWeight: 500 }}>
+                Total: Rs. {Number(net_total).toFixed(2)}
+              </DefaultText>
             </Col>
           </Row>
         </Col>
