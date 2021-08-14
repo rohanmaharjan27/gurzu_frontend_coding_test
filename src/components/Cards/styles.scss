@@ -1,0 +1,39 @@
+$btnColorOne: #389e0d;
+$btnColorTwo: #096dd9;
+
+.bookCard {
+  &-image {
+    object-fit: contain;
+    border-radius: 4px;
+  }
+  &-bodyColPadding {
+    padding-top: 8px;
+  }
+  &-bodyCartBtnCol {
+    padding-top: 32px;
+  }
+  &-btnCart {
+    padding: 4px;
+    border-radius: 4px;
+    width: 100%;
+    height: 40px;
+    border: 0.5px solid #000;
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    color: #000;
+
+    &:hover {
+      border: 0.5px solid $btnColorTwo;
+      background: $btnColorTwo;
+      color: #fff;
+    }
+    &:focus {
+      border: 0.5px solid $btnColorTwo;
+      background: $btnColorTwo;
+      color: #fff;
+    }
+  }
+}

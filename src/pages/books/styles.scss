@@ -1,0 +1,15 @@
+.filterInput {
+  max-width: 650px;
+  border-radius: 8px;
+  border: 1px solid #c3c3c3;
+}
+
+.book {
+  &-row {
+    width: 100%;
+    padding-top: 20px;
+  }
+  &-col {
+    padding-top: 20px;
+  }
+}
