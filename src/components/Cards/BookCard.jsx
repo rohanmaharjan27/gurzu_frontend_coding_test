@@ -17,6 +17,7 @@ export default function BookCard(props) {
     stock,
     author,
     genre,
+    originalStock,
     published_date,
   } = item !== undefined && item;
 
@@ -56,6 +57,7 @@ export default function BookCard(props) {
       quantity: 1,
       price: convertedPrice,
       net_total: convertedPrice,
+      originalStock,
     };
 
     if (!foundBookObj && currentCart.length === 5) {
@@ -148,11 +150,15 @@ export default function BookCard(props) {
             <Col xs={24} className="bookCard-bodyColPadding">
               {stock <= 5 ? (
                 <Tag color="#ff7a45">
-                  <TagText>{stock} pieces left</TagText>
+                  <TagText>
+                    {stock} {stock === 1 ? "piece" : "pieces"} left
+                  </TagText>
                 </Tag>
               ) : (
                 <Tag color="#52c41a">
-                  <TagText>{stock} pieces left</TagText>
+                  <TagText>
+                    {stock} {stock === 1 ? "piece" : "pieces"} left
+                  </TagText>
                 </Tag>
               )}
             </Col>

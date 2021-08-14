@@ -5,6 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Col, Image, Row } from "antd";
 import Meta from "antd/lib/card/Meta";
+import useBreakpoint from "antd/lib/grid/hooks/useBreakpoint";
 import React from "react";
 import Notification from "../Notification/Notification";
 import { BookNameText, DefaultText } from "../Typography/Typography";
@@ -23,6 +24,8 @@ export default function CartCard(props) {
 
   const { id, name, image, quantity, price, net_total } =
     item !== undefined && item;
+
+  const screens = useBreakpoint();
 
   const handleQuantitySubtract = () => {
     const cartProducts = [...currentCart];
@@ -85,12 +88,12 @@ export default function CartCard(props) {
         padding: "8px",
       }}
     >
-      <Row style={{ width: "100%" }}>
+      <Row style={{ width: "100%" }} justify="center" align="middle">
         <Col xs={4}>
           <Image
             src={image}
-            width="100%"
-            height="70px"
+            width="95%"
+            height="100%"
             alt="cart-book-image"
             className="bookCard-image"
           />
@@ -98,10 +101,27 @@ export default function CartCard(props) {
         <Col xs={8}>
           <Row style={{ width: "100%" }}>
             <Col xs={24}>
-              <Meta title={<BookNameText>{name}</BookNameText>} />
+              <Meta
+                title={
+                  <BookNameText
+                    style={{
+                      fontSize: screens.md ? "14px" : "12px",
+                    }}
+                  >
+                    {name}
+                  </BookNameText>
+                }
+              />
             </Col>
             <Col xs={24} className="bookCard-bodyColPadding">
-              <DefaultText style={{ fontWeight: 500 }}>Rs. {price}</DefaultText>
+              <DefaultText
+                style={{
+                  fontWeight: 500,
+                  fontSize: screens.md ? "14px" : "12px",
+                }}
+              >
+                Rs. {price}
+              </DefaultText>
             </Col>
           </Row>
         </Col>
@@ -121,7 +141,12 @@ export default function CartCard(props) {
               />
             </Col>
             <Col xs={24} className="bookCard-bodyColPadding" align="middle">
-              <DefaultText style={{ fontWeight: 500 }}>
+              <DefaultText
+                style={{
+                  fontWeight: 500,
+                  fontSize: screens.md ? "14px" : "12px",
+                }}
+              >
                 Total: Rs. {Number(net_total).toFixed(2)}
               </DefaultText>
             </Col>
@@ -130,7 +155,7 @@ export default function CartCard(props) {
         <Col xs={2} align="end">
           <CloseOutlined
             style={{ fontSize: "16px" }}
-            onClick={() => handleRemove(id, index)}
+            onClick={() => handleRemove(id, index, item)}
           />
         </Col>
       </Row>
