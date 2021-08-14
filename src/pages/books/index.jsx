@@ -34,6 +34,8 @@ export default function Index() {
 
   console.log("bookList", loading, bookList);
 
+  console.log(books);
+
   //   useEffect(() => {
   //     if (cartFromStorage) {
   //       setCurrentCart(cartFromStorage);
@@ -70,7 +72,14 @@ export default function Index() {
     );
   };
 
-  const handleRemoveFromCart = (index) => {
+  const handleRemoveFromCart = (bookID, index) => {
+    let newBooks = [...books];
+    newBooks.map((book) => {
+      book.id === bookID && book.stock++;
+      return null;
+    });
+    setBooks(newBooks);
+
     let newCart = currentCart.filter((item, idx) => idx !== index);
     // localStorage.setItem("book_market_cart", JSON.stringify(newCart));
     setCurrentCart(newCart);
@@ -78,7 +87,8 @@ export default function Index() {
 
   const calculateCartTotal = () => {
     let total = 0;
-    currentCart && currentCart.map((item) => (total += parseFloat(item.price)));
+    currentCart &&
+      currentCart.map((item) => (total += parseFloat(item.net_total)));
 
     return total;
   };
@@ -106,7 +116,7 @@ export default function Index() {
     };
   }, [books, currentPage]);
 
-  console.log("cart", currentCart);
+  //   console.log("cart", currentCart);
 
   return (
     <React.Fragment>
@@ -145,7 +155,6 @@ export default function Index() {
                       <Col xs={24} sm={12} lg={8} xl={6} key={idx}>
                         <BookCard
                           item={item}
-                          index={idx}
                           books={books}
                           setBooks={setBooks}
                           currentCart={currentCart}
@@ -200,7 +209,9 @@ export default function Index() {
                 <DefaultTitle style={{ fontSize: "18px" }}>
                   {currentCart.length === 0
                     ? `Cart is empty, please add items.`
-                    : `Total Amout: Rs. ${calculateCartTotal().toFixed(2)}`}
+                    : `Total Amout: Rs. ${Number(calculateCartTotal()).toFixed(
+                        2
+                      )}`}
                 </DefaultTitle>
               </Col>
             </Row>

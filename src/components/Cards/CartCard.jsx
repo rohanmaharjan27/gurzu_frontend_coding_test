@@ -21,7 +21,7 @@ export default function CartCard(props) {
     handleRemove,
   } = props;
 
-  const { name, image, quantity, price, net_total, bookIndex } =
+  const { id, name, image, quantity, price, net_total } =
     item !== undefined && item;
 
   const handleQuantitySubtract = () => {
@@ -32,7 +32,10 @@ export default function CartCard(props) {
     } else {
       // increasing stock of particular book when book quantity is decreased from cart
       let newBooks = [...books];
-      newBooks[bookIndex]["stock"]++;
+      newBooks.map((book) => {
+        book.id === id && book.stock++;
+        return null;
+      });
       setBooks(newBooks);
 
       // updating book quantity and net total when book quantity is decreased from cart
@@ -51,10 +54,15 @@ export default function CartCard(props) {
 
     // decreasing stock of particular book when book quantity is increased from cart
     let newBooks = [...books];
-    let currentStock = newBooks[bookIndex]["stock"];
 
-    if (currentStock > 0) {
-      newBooks[bookIndex]["stock"]--;
+    // get stock according to id of object from an array
+    let currentBookObj = newBooks.find((element) => element.id === id);
+
+    if (currentBookObj.stock > 0) {
+      newBooks.map((book) => {
+        book.id === id && book.stock--;
+        return null;
+      });
       setBooks(newBooks);
 
       // updating book quantity and net total when book quantity is increased from cart
@@ -122,7 +130,7 @@ export default function CartCard(props) {
         <Col xs={2} align="end">
           <CloseOutlined
             style={{ fontSize: "16px" }}
-            onClick={() => handleRemove(index)}
+            onClick={() => handleRemove(id, index)}
           />
         </Col>
       </Row>

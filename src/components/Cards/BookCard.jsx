@@ -7,7 +7,7 @@ import { BookNameText, DefaultText, TagText } from "../Typography/Typography";
 import "./styles.scss";
 
 export default function BookCard(props) {
-  const { item, index, books, setBooks, currentCart, setCurrentCart } = props;
+  const { item, books, setBooks, currentCart, setCurrentCart } = props;
 
   const {
     id,
@@ -46,7 +46,7 @@ export default function BookCard(props) {
 
     let foundBookObj;
     if (currentCart.length > 0) {
-      foundBookObj = currentCart.find((element) => element.id === item.id);
+      foundBookObj = currentCart.find((element) => element.id === id);
     }
 
     let bookObjIfNew = {
@@ -56,43 +56,40 @@ export default function BookCard(props) {
       quantity: 1,
       price: convertedPrice,
       net_total: convertedPrice,
-      bookIndex: index,
     };
 
-    // let bookObjIfExists;
-    // if (currentCart.length > 0 && foundBookObj) {
-    //   bookObjIfExists = {
-    //     id: foundBookObj.id,
-    //     name: foundBookObj.name,
-    //     image: foundBookObj.image,
-    //     quantity: foundBookObj.quantity,
-    //     price: foundBookObj.price,
-    //     net_total: foundBookObj.quantity * foundBookObj.price,
-    //   };
-    // }
-
-    if (currentCart.length === 5) {
+    if (!foundBookObj && currentCart.length === 5) {
       Notification("warn", "Maximum cart quantity reached!");
     } else {
       if (foundBookObj && foundBookObj.quantity > 0 && stock > 0) {
-        // foundBookObj.quantity += 1;
-        // foundBookObj.net_total = foundBookObj.quantity * foundBookObj.price;
-
         let newBooks = [...books];
-        newBooks[index]["stock"]--;
+
+        newBooks.map((book) => {
+          book.id === id && book.stock--;
+          return null;
+        });
+
         setBooks(newBooks);
 
         let newCart = [...currentCart];
-        newCart[index]["quantity"] += 1;
-        newCart[index]["net_total"] =
-          newCart[index]["quantity"] * parseFloat(newCart[index]["price"]);
-        cartArr.push(foundBookObj);
+
+        newCart.map((book) => {
+          if (book.id === id) {
+            book.quantity++;
+            book.net_total = book.quantity * parseFloat(book.price);
+          }
+
+          return null;
+        });
 
         setCurrentCart(newCart);
         Notification("success", "Book quantity has been updated!");
       } else {
         let newBooks = [...books];
-        newBooks[index]["stock"]--;
+        newBooks.map((book) => {
+          book.id === id && book.stock--;
+          return null;
+        });
         setBooks(newBooks);
         cartArr.push(bookObjIfNew);
         setCurrentCart([...currentCart, ...cartArr]);
